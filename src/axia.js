@@ -1,25 +1,29 @@
 /*
-	axia.js
-	version 0.1
+axia.js
+version 0.1
 
-	Creates handy events for your responsive design breakpoints
+Creates handy events for your responsive design breakpoints
 
-	Copyright (c) 2016 axcelwork
-	axcelwork@gmail.com
+Copyright (c) 2016 axcelwork
+axcelwork@gmail.com
 
-	Documentation for this plugin lives here:
-	https://github.com/axcelwork/axia.js
+Documentation for this plugin lives here:
+https://github.com/axcelwork/axia.js
 
-	Released under the MIT license
-	http://www.opensource.org/licenses/mit-license.php
+Released under the MIT license
+http://www.opensource.org/licenses/mit-license.php
 */
 var Axia = function( options ) {
 	var _ = this;
 	_.listeners = [];
+	_.settings = {};
 
 	this.defaults = {
 		breakpoints: [ 600, 960 ]
 	};
+
+	_.settings.breakpoints = options.breakpoints || this.defaults.breakpoints;
+
 	
 	window.addEventListener( 'load', resizeHandler );
 	window.addEventListener( 'resize', resizeHandler );
@@ -28,19 +32,24 @@ var Axia = function( options ) {
 	var bp_event = new Event( 'breakpoints' );
 	
 	function resizeHandler(){
-		if ( window.matchMedia( '(max-width:599px)' ).matches ) {
-			if( _.ua_status != 'sp' ) _.dispatchEvent( bp_event, 'sp' );
-			_.ua_status = 'sp';
+
+		if ( window.matchMedia( '(max-width: ' + ( _.settings.breakpoints[ 0 ] - 1 ) + 'px)' ).matches ) {
+			if( _.ua_status != 'bp' + ( _.settings.breakpoints[ 0 ] - 1 ) ) _.dispatchEvent( bp_event, 'bp' + ( _.settings.breakpoints[ 0 ] - 1 ) );
+			_.ua_status = 'bp' + ( _.settings.breakpoints[ 0 ] - 1 );
 		}
-		else if ( window.matchMedia( '(min-width:600px) and (max-width:959px)' ).matches ) {
-			if( _.ua_status != 'tab' ) _.dispatchEvent( bp_event, 'tab' );
-			_.ua_status = 'tab';
+		
+		_.settings.breakpoints.some( function( val, index ){
+			if ( window.matchMedia( '(min-width: ' + _.settings.breakpoints[ index ] + 'px) and (max-width: ' +  _.settings.breakpoints[ index + 1 ] + 'px)' ).matches ) {
+				if( _.ua_status != 'bp' + _.settings.breakpoints[ index ] ) _.dispatchEvent( bp_event, 'bp' + _.settings.breakpoints[ index ] + ' - ' + _.settings.breakpoints[ index + 1 ] );
+				_.ua_status = 'bp' + _.settings.breakpoints[ index ];
+			}
+		});
+
+		if ( window.matchMedia( '(min-width:' + _.settings.breakpoints[ _.settings.breakpoints.length - 1 ] + 'px)' ).matches ) {
+			if( _.ua_status != 'bp' + ( _.settings.breakpoints[ _.settings.breakpoints.length - 1 ] ) ) _.dispatchEvent( bp_event, 'bp' + ( _.settings.breakpoints[ _.settings.breakpoints.length - 1 ] ) );
+			_.ua_status = 'bp' + ( _.settings.breakpoints[ _.settings.breakpoints.length - 1 ] );
 		}
-		else {
-			if( _.ua_status != 'pc' ) _.dispatchEvent( bp_event, 'pc' );
-			_.ua_status = 'pc';
-		}
-	}
+	};
 
 	this.dispatchEvent = function( e, data ){
 		var observers = _.listeners[ e.type ] || '';
@@ -49,7 +58,7 @@ var Axia = function( options ) {
 				observers[ i ]( data );
 			}
 		}
-	}
+	};
 };
 
 
@@ -57,8 +66,7 @@ Axia.prototype.addEventListener = function( state, callback, isCapture ) {
 	if( !this.listeners[ state ] ) this.listeners[ state ] = [];
 	this.listeners[ state ].push( callback );
 };
-Axia.prototype.removeEventListener = function( state, callback ){
-	// console.log( callback );
+Axia.prototype.removeEventListener = function( state ){
 	if( !this.listeners[ state ] ) return;
 	this.listeners[ state ] = null;
 }

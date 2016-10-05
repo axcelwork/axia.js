@@ -1,16 +1,10 @@
 // $(function(){
-	var axia = new Axia();
+	var axia = new Axia( {
+		breakpoints: [ 480, 600, 960 ]
+	} );
 
 	axia.addEventListener( 'breakpoints', function( e ){
-		if( e == 'pc' ){
-			console.log( 'PC時' );
-		}
-		else if( e == 'tab' ) {
-			console.log( 'タブレット時' );
-		}
-		else if( e == 'sp' ) {
-			console.log( 'スマホ時' );
-		}
+		console.log( e );
 	} );
 
 	// axia.removeEventListener( 'breakpoints' );
