@@ -1,6 +1,6 @@
 /*
 axia.js
-version 0.1
+version 0.2
 
 Creates handy events for your responsive design breakpoints
 
@@ -23,33 +23,10 @@ var Axia = function( options ) {
 	};
 
 	_.settings.breakpoints = options.breakpoints || this.defaults.breakpoints;
+	_.settings.breakpoints.unshift(1);
 
-	
-	window.addEventListener( 'load', resizeHandler );
-	window.addEventListener( 'resize', resizeHandler );
-
-	_.ua_status = '';
-	var bp_event = new Event( 'breakpoints' );
-	
-	function resizeHandler(){
-
-		if ( window.matchMedia( '(max-width: ' + ( _.settings.breakpoints[ 0 ] - 1 ) + 'px)' ).matches ) {
-			if( _.ua_status != 'bp' + ( _.settings.breakpoints[ 0 ] - 1 ) ) _.dispatchEvent( bp_event, 'bp' + ( _.settings.breakpoints[ 0 ] - 1 ) );
-			_.ua_status = 'bp' + ( _.settings.breakpoints[ 0 ] - 1 );
-		}
-		
-		_.settings.breakpoints.some( function( val, index ){
-			if ( window.matchMedia( '(min-width: ' + _.settings.breakpoints[ index ] + 'px) and (max-width: ' +  _.settings.breakpoints[ index + 1 ] + 'px)' ).matches ) {
-				if( _.ua_status != 'bp' + _.settings.breakpoints[ index ] ) _.dispatchEvent( bp_event, 'bp' + _.settings.breakpoints[ index ] + ' - ' + _.settings.breakpoints[ index + 1 ] );
-				_.ua_status = 'bp' + _.settings.breakpoints[ index ];
-			}
-		});
-
-		if ( window.matchMedia( '(min-width:' + _.settings.breakpoints[ _.settings.breakpoints.length - 1 ] + 'px)' ).matches ) {
-			if( _.ua_status != 'bp' + ( _.settings.breakpoints[ _.settings.breakpoints.length - 1 ] ) ) _.dispatchEvent( bp_event, 'bp' + ( _.settings.breakpoints[ _.settings.breakpoints.length - 1 ] ) );
-			_.ua_status = 'bp' + ( _.settings.breakpoints[ _.settings.breakpoints.length - 1 ] );
-		}
-	};
+	var break_point_change_event = new Event( 'break-point-change' );
+	var break_point_change_event_numeric = new Event( 'break-point-change-numeric' );
 
 	this.dispatchEvent = function( e, data ){
 		var observers = _.listeners[ e.type ] || '';
@@ -59,6 +36,65 @@ var Axia = function( options ) {
 			}
 		}
 	};
+
+	this.check_breakpoints = function(){
+		_.settings.breakpoints.some( function( val, index ){
+			if ( index == _.settings.breakpoints.length - 1 ) {
+				if ( window.matchMedia( '(min-width:' + _.settings.breakpoints[_.settings.breakpoints.length - 1] + 'px)' ).matches ) {
+					_.dispatchEvent( break_point_change_event, { width: window.innerWidth, size: 'large', breakpoint: _.settings.breakpoints[_.settings.breakpoints.length - 1] } );
+				}
+
+			}
+			else if( index == 0 ) {
+				if ( window.matchMedia( '(max-width:' + _.settings.breakpoints[1] + 'px)' ).matches ) {
+					_.dispatchEvent( break_point_change_event, { width: window.innerWidth, size: 'small', breakpoint: _.settings.breakpoints[1] } );
+				}
+
+			}
+			else {
+				if ( window.matchMedia( '(min-width:' + ( _.settings.breakpoints[index] ) + 'px) and (max-width:' + ( _.settings.breakpoints[index + 1 ] - 1 ) + 'px)' ).matches ) {
+					_.dispatchEvent( break_point_change_event, { width: window.innerWidth, size: 'small', breakpoint: _.settings.breakpoints[index + 1] } );
+				}
+			}
+		});
+	};
+
+	var tmp = window.innerWidth;
+	var staus_size = '';
+
+	_.settings.breakpoints.some( function( val, index ){
+		window.matchMedia( '(min-width:' + val + 'px)' ).addListener( function(){
+			// compar
+			if( window.innerWidth <= tmp ){
+				staus_size = 'small'
+			}
+			else if( window.innerWidth >= tmp ) {
+				staus_size = 'large';
+			}
+
+			// width update
+			tmp = window.innerWidth;
+
+			// fire
+			_.dispatchEvent( break_point_change_event, { width: window.innerWidth, size: staus_size, breakpoint: val } );
+		});
+	});
+
+	window.addEventListener( 'load', this.check_breakpoints );
+
+
+	this.addEventListener( 'break-point-change', function( e ){
+		_.settings.breakpoints.some( function( val, index ){
+			if( val == e.breakpoint ) {
+				if( e.size == 'large' ) {
+					_.dispatchEvent( new Event( e.breakpoint ), { width: window.innerWidth, breakpoint: val } );
+				}
+				else if( e.size == 'small' ) {
+					_.dispatchEvent( new Event( _.settings.breakpoints[ index - 1 ] ), { width: window.innerWidth, breakpoint: val } );
+				}
+			}
+		});
+	} );
 };
 
 
