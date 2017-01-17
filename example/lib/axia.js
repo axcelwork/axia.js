@@ -22,9 +22,11 @@ var Axia = function( options ) {
 		breakpoints: [ 600, 960 ]
 	};
 
+	// Options
 	_.settings.breakpoints = options.breakpoints || this.defaults.breakpoints;
 	_.settings.breakpoints.unshift(1);
 
+	// Event Add
 	var break_point_change_event = new Event( 'break-point-change' );
 	var break_point_change_event_numeric = new Event( 'break-point-change-numeric' );
 
@@ -43,7 +45,6 @@ var Axia = function( options ) {
 				if ( window.matchMedia( '(min-width:' + _.settings.breakpoints[_.settings.breakpoints.length - 1] + 'px)' ).matches ) {
 					_.dispatchEvent( break_point_change_event, { width: window.innerWidth, size: 'large', breakpoint: _.settings.breakpoints[_.settings.breakpoints.length - 1] } );
 				}
-
 			}
 			else if( index == 0 ) {
 				if ( window.matchMedia( '(max-width:' + _.settings.breakpoints[1] + 'px)' ).matches ) {
@@ -98,10 +99,12 @@ var Axia = function( options ) {
 };
 
 
+// addEventListener Method
 Axia.prototype.addEventListener = function( state, callback, isCapture ) {
 	if( !this.listeners[ state ] ) this.listeners[ state ] = [];
 	this.listeners[ state ].push( callback );
 };
+// removeEventListener Method
 Axia.prototype.removeEventListener = function( state ){
 	if( !this.listeners[ state ] ) return;
 	this.listeners[ state ] = null;
