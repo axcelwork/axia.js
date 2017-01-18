@@ -1,6 +1,6 @@
 /*
 axia.js
-version 0.2
+version 0.2.1
 
 Creates handy events for your responsive design breakpoints
 
@@ -82,6 +82,7 @@ var Axia = function( options ) {
 	});
 
 	window.addEventListener( 'load', this.check_breakpoints );
+	window.addEventListener( 'orientationchange', this.check_breakpoints );
 
 
 	this.addEventListener( 'break-point-change', function( e ){
