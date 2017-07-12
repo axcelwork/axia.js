@@ -3,21 +3,8 @@ var axia = new Axia( {
 } );
 
 axia.addEventListener( 'break-point-change', function( e ){
-	console.log( e );
-} );
-
-axia.addEventListener( '960', function( e ){
-	console.log( e );
-} );
-
-axia.addEventListener( '600', function( e ){
-	console.log( e );
-} );
-
-axia.addEventListener( '480', function( e ){
-	console.log( e );
-} );
-
-axia.addEventListener( '1', function( e ){
-	console.log( e );
+    // Object {width: xxx, breakpoint: 960}
+    // Object {width: xxx, breakpoint: 600}
+    // Object {width: xxx, breakpoint: 1}
+    console.log( e['breakpoint'] );
 } );
