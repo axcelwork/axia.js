@@ -9,9 +9,8 @@
 `window.matchMedia` を用いてブレイクポイントが変化したらイベントをリッスンします。  
 デフォルトは 600px と 960px の2箇所です。
 
-## Usage
-クラス化しているので new 宣言します。  
-この時、オプションとして配列を渡すことによって、様々なブレイクポイントを設定できます。
+### Usage
+new 宣言する際にオプションとして配列を渡すことで任意のブレイクポイントを設定することができます。
 
     var axia = new Axia();
 
@@ -21,13 +20,9 @@
         breakpoints: [ 480, 600, 960 ]
     } );
 
-#### break-point-change
-登録したブレイクポイントを `window.matchMedia` で監視して該当したらイベントをリッスンします。
-デフォルトは `breakpoints: [ 600, 960 ]` となっています。
+`breakpoints` というカスタムイベント名で実装しているので、`addEventListener` でイベントを登録します。
 
-`break-point-change` というカスタムイベント名で実装しているので、`addEventListener` でイベントを登録します。
-
-    axia.addEventListener( 'break-point-change', function( e ){
+    axia.addEventListener( 'breakpoints', function( e ){
         console.log( e );
     } );
 
@@ -44,4 +39,4 @@
 
 #### イベントの削除
 
-    axia.removeEventListener( 'break-point-change' );
+    axia.removeEventListener( 'breakpoints' );

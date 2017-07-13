@@ -1,6 +1,6 @@
 /*
 axia.js
-version 0.1
+version 0.2
 
 Creates handy events for your responsive design breakpoints
 
@@ -40,10 +40,10 @@ var Axia = function (options) {
 	};
 
 	if (typeof Event === 'function') {
-		var break_point_change_event = new Event('break-point-change');
+		var break_point_change_event = new Event('breakpoints');
 	} else {
 		var break_point_change_event = document.createEvent('Event');
-		break_point_change_event.initEvent('break-point-change', true, true);
+		break_point_change_event.initEvent('breakpoints', true, true);
 	}
 
 	var myquery = [];
